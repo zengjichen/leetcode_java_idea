@@ -1,57 +1,1 @@
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Queue;
-/**
- * Created by Administrator on 2018/10/8.
- */
-public class Sol920 {
-}
-/**
- Definition for a binary tree node.
- **/
- class TreeNode {
-    TreeNode left;
-     TreeNode right;
-     int val;
-     TreeNode(int x) { val = x; }
-
- }
-class CBTInserter {
-    TreeNode root;
-    Deque<TreeNode> deque;
-
-    public CBTInserter(TreeNode root) {
-        this.root = root;
-        deque = new LinkedList<>();
-        Queue<TreeNode> queue = new LinkedList();
-        queue.offer(root);
-
-        // BFS to populate deque
-        while (!queue.isEmpty()) {
-            TreeNode node = queue.poll();
-            if (node.left == null || node.right == null)
-                deque.offerLast(node);
-            if (node.left != null)
-                queue.offer(node.left);
-            if (node.right != null)
-                queue.offer(node.right);
-        }
-    }
-
-    public int insert(int v) {
-        TreeNode node = deque.peekFirst();
-        deque.offerLast(new TreeNode(v));
-        if (node.left == null)
-            node.left = deque.peekLast();
-        else {
-            node.right = deque.peekLast();
-            deque.pollFirst();
-        }
-
-        return node.val;
-    }
-
-    public TreeNode get_root() {
-        return root;
-    }
-}
+import java.util.Deque;import java.util.LinkedList;import java.util.Arrays;/** * Created by Administrator on 2018/10/8. */public class Sol920 {}class Solution_920 {    public int numMusicPlaylists(int N, int L, int K) {        int MOD = 1_000_000_007;        long[][] dp = new long[L+1][N+1];        dp[0][0] = 1;        for (int i = 1; i <= L; ++i)            for (int j = 1; j <= N; ++j) {                dp[i][j] += dp[i-1][j-1] * (N-j+1);                dp[i][j] += dp[i-1][j] * Math.max(j-K, 0);                dp[i][j] %= MOD;            }        return (int) dp[L][N];    }}class Solution_920_2 {    public int numMusicPlaylists(int N, int L, int K) {        int MOD = 1_000_000_007;        // dp[S] at time P = <S, P> as discussed in article        long[] dp = new long[L - N + 1];        Arrays.fill(dp, 1);        for (int p = 2; p <= N - K; ++p)            for (int i = 1; i <= L - N; ++i) {                dp[i] += dp[i - 1] * p;                dp[i] %= MOD;            }        // Multiply by N!        long ans = dp[L - N];        for (int k = 2; k <= N; ++k)            ans = ans * k % MOD;        return (int) ans;    }}
